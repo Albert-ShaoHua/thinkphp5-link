@@ -1,0 +1,79 @@
+<div class="ibox">
+    <div class="ibox-title">
+        <div class="col-md-2">
+            <i class="fa fa-plus"></i> <strong>三级联动</strong>
+        </div>
+    </div>
+    <div class="ibox-content">
+        <form method="post" class="form-horizontal" id="myForm" action="">
+            <input type="hidden" name="user_id" value="{$list['user_id']}">
+            <div role="tabpanel" class="tab-pane active" id="basic">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">地址</label>
+                    <div class="formControls col-xs-8 col-sm-9">
+                        <!-- 省/自治区 -->
+                        <select name="pro" id="pro">
+                            <option>--请选择省--</option>
+                            {volist name="pro" id="vo"}
+                            <option value="{$vo.id}">{$vo.name}</option>
+                            {/volist}
+                        </select>
+                        <!-- 市/州 -->
+                        <select name="city" id="city">
+                            <option>--请选择市--</option>
+                            <option value=""></option>
+                        </select>
+                        <!-- 区/县 -->
+                        <select name="county" id="county" >
+                            <option>--请选择区/县--</option>
+                            <option value=""></option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script src="__PUBLIC__/js/jquery-2.1.1.js"></script>
+<script type="text/javascript">
+    $('#pro').change(function(){
+        $prov=$('#pro').val();
+        $.ajax({
+            type:"post",
+            url:"{:url('getCity')}",
+            data:{"pro":$prov},
+            dataType:"json",
+            success:function(data){
+
+                //清空第三级下拉列表
+                $("#county").html("<option>--请选择区/县--</option>");
+
+                var html ='<option value="">--请选择市--</option>';
+                for(var i in data){
+                    html += '<option value="'+data[i].id+'">'+data[i].name+'</option>';
+                }
+                $('#city').html(html);
+            }
+        });
+    });
+
+    $('#city').change(function(){
+        $city=$('#city').val();
+        $.ajax({
+            type:"post",
+            url:"{:url('getCounty')}",
+            data:{"city":$city},
+            dataType:"json",
+            success:function(data){
+                var html ='<option value="">--请选择区/县--</option>';
+                for(var i in data){
+                    html += '<option value="'+data[i].id+'">'+data[i].name+'</option>';
+                }
+                $('#county').html(html);
+            }
+        });
+    });
+
+</script>
